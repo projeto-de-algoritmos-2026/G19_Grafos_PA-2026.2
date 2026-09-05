@@ -10,6 +10,8 @@ struct ArpeggioGraph {
         int id;
         Arpeggio arpeggio;
         int chordIndex;
+        bool isSource;
+        bool isSink;
     };
 
     struct Edge {
