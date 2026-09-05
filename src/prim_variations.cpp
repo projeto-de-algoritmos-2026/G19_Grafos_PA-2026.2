@@ -27,18 +27,20 @@ static double calculateSoloDistance(const std::vector<Arpeggio>& s1, const std::
 VariationGraph buildVariationGraph(const std::vector<Arpeggio>& baseSolo, double radius) {
     VariationGraph graph;
 
-    graph.nodes.push_back({0, baseSolo.empty() ? Arpeggio{} : baseSolo[0], 0, "Solo Base Original"});
+    graph.nodes.push_back({0, baseSolo.empty() ? Arpeggio{} : baseSolo[0], 0, "Solo Base Original", {}});
     
     std::vector<std::vector<Arpeggio>> nodeSolos;
     nodeSolos.push_back(baseSolo);
+    graph.nodes[0].solo = baseSolo;
 
     std::vector<Arpeggio> varInverted = baseSolo;
     for (auto& arp : varInverted) {
         std::reverse(arp.notes.begin(), arp.notes.end());
     }
     int id1 = (int)graph.nodes.size();
-    graph.nodes.push_back({id1, varInverted.empty() ? Arpeggio{} : varInverted[0], 0, "Variacao 1: Ordem Invertida"});
+    graph.nodes.push_back({id1, varInverted.empty() ? Arpeggio{} : varInverted[0], 0, "Variacao 1: Ordem Invertida", {}});
     nodeSolos.push_back(varInverted);
+    graph.nodes[id1].solo = varInverted;
 
     std::vector<Arpeggio> varShifted = baseSolo;
     for (auto& arp : varShifted) {
@@ -49,8 +51,9 @@ VariationGraph buildVariationGraph(const std::vector<Arpeggio>& baseSolo, double
         }
     }
     int id2 = (int)graph.nodes.size();
-    graph.nodes.push_back({id2, varShifted.empty() ? Arpeggio{} : varShifted[0], 0, "Variacao 2: Deslocada (+2 casas)"});
+    graph.nodes.push_back({id2, varShifted.empty() ? Arpeggio{} : varShifted[0], 0, "Variacao 2: Deslocada (+2 casas)", {}});
     nodeSolos.push_back(varShifted);
+    graph.nodes[id2].solo = varShifted;
 
     std::vector<Arpeggio> varPassing = baseSolo;
     for (auto& arp : varPassing) {
@@ -62,8 +65,9 @@ VariationGraph buildVariationGraph(const std::vector<Arpeggio>& baseSolo, double
         }
     }
     int id3 = (int)graph.nodes.size();
-    graph.nodes.push_back({id3, varPassing.empty() ? Arpeggio{} : varPassing[0], 0, "Variacao 3: Nota de Aproximacao Inserida"});
+    graph.nodes.push_back({id3, varPassing.empty() ? Arpeggio{} : varPassing[0], 0, "Variacao 3: Nota de Aproximacao Inserida", {}});
     nodeSolos.push_back(varPassing);
+    graph.nodes[id3].solo = varPassing;
 
     std::vector<Arpeggio> varLower = baseSolo;
     for (auto& arp : varLower) {
@@ -74,8 +78,9 @@ VariationGraph buildVariationGraph(const std::vector<Arpeggio>& baseSolo, double
         }
     }
     int id4 = (int)graph.nodes.size();
-    graph.nodes.push_back({id4, varLower.empty() ? Arpeggio{} : varLower[0], 0, "Variacao 4: Regiao Grave (-1 casa)"});
+    graph.nodes.push_back({id4, varLower.empty() ? Arpeggio{} : varLower[0], 0, "Variacao 4: Regiao Grave (-1 casa)", {}});
     nodeSolos.push_back(varLower);
+    graph.nodes[id4].solo = varLower;
 
     int n = (int)graph.nodes.size();
     graph.adj.resize(n);
@@ -141,10 +146,10 @@ std::vector<std::vector<Arpeggio>> sampleVariations(const VariationGraph& graph,
         if (count >= numPaths) break;
         int targetNode = edge.v;
         if (targetNode >= 0 && targetNode < (int)graph.nodes.size()) {
-            std::vector<Arpeggio> soloSample;
-            soloSample.push_back(graph.nodes[targetNode].arpeggio);
-            variations.push_back(soloSample);
-            count++;
+            if (!graph.nodes[targetNode].solo.empty()) {
+                variations.push_back(graph.nodes[targetNode].solo);
+                count++;
+            }
         }
     }
     return variations;

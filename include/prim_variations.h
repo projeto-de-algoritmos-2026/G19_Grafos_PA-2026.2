@@ -31,6 +31,7 @@ struct VariationGraph {
         Arpeggio arpeggio;
         int sectionIndex;
         std::string label;
+        std::vector<Arpeggio> solo;
     };
 
     struct Edge {
