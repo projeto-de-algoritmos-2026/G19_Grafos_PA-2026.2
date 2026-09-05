@@ -16,4 +16,6 @@ struct Arpeggio {
 
 std::vector<Arpeggio> generateArpeggios(const std::string& chordName, int maxFret = 12, int maxStretch = 4);
 
+void printArpeggioTab(const std::vector<Arpeggio>& arpeggios, const std::string& title="");
+
 #endif
