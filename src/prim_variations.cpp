@@ -37,7 +37,7 @@ VariationGraph buildVariationGraph(const std::vector<Arpeggio>& baseSolo, double
         std::reverse(arp.notes.begin(), arp.notes.end());
     }
     int id1 = (int)graph.nodes.size();
-    graph.nodes.push_back({id1, varInverted.empty() ? Arpeggio{} : varInverted[0], 0, "Variação 1: Ordem Invertida"});
+    graph.nodes.push_back({id1, varInverted.empty() ? Arpeggio{} : varInverted[0], 0, "Variacao 1: Ordem Invertida"});
     nodeSolos.push_back(varInverted);
 
     std::vector<Arpeggio> varShifted = baseSolo;
@@ -49,7 +49,7 @@ VariationGraph buildVariationGraph(const std::vector<Arpeggio>& baseSolo, double
         }
     }
     int id2 = (int)graph.nodes.size();
-    graph.nodes.push_back({id2, varShifted.empty() ? Arpeggio{} : varShifted[0], 0, "Variação 2: Deslocada (+2 casas)"});
+    graph.nodes.push_back({id2, varShifted.empty() ? Arpeggio{} : varShifted[0], 0, "Variacao 2: Deslocada (+2 casas)"});
     nodeSolos.push_back(varShifted);
 
     std::vector<Arpeggio> varPassing = baseSolo;
@@ -62,7 +62,7 @@ VariationGraph buildVariationGraph(const std::vector<Arpeggio>& baseSolo, double
         }
     }
     int id3 = (int)graph.nodes.size();
-    graph.nodes.push_back({id3, varPassing.empty() ? Arpeggio{} : varPassing[0], 0, "Variação 3: Nota de Aproximação Inserida"});
+    graph.nodes.push_back({id3, varPassing.empty() ? Arpeggio{} : varPassing[0], 0, "Variacao 3: Nota de Aproximacao Inserida"});
     nodeSolos.push_back(varPassing);
 
     std::vector<Arpeggio> varLower = baseSolo;
@@ -74,7 +74,7 @@ VariationGraph buildVariationGraph(const std::vector<Arpeggio>& baseSolo, double
         }
     }
     int id4 = (int)graph.nodes.size();
-    graph.nodes.push_back({id4, varLower.empty() ? Arpeggio{} : varLower[0], 0, "Variação 4: Região Grave (-1 casa)"});
+    graph.nodes.push_back({id4, varLower.empty() ? Arpeggio{} : varLower[0], 0, "Variacao 4: Regiao Grave (-1 casa)"});
     nodeSolos.push_back(varLower);
 
     int n = (int)graph.nodes.size();
@@ -153,7 +153,7 @@ std::vector<std::vector<Arpeggio>> sampleVariations(const VariationGraph& graph,
 void printSoloTab(const std::vector<Arpeggio>& solo, const std::string& soloName) {
     std::cout << "\n=== " << soloName << " ===" << std::endl;
     for (size_t i = 0; i < solo.size(); ++i) {
-        std::cout << "Acorde: " << solo[i].chordName << " (Região da casa " << solo[i].regionFret << ")" << std::endl;
+        std::cout << "Acorde: " << solo[i].chordName << " (Regiao da casa " << solo[i].regionFret << ")" << std::endl;
         std::cout << "  Notas (String, Casa, MIDI): ";
         for (const auto& note : solo[i].notes) {
             std::cout << "[S:" << note.string << " C:" << note.fret << " M:" << note.midi << "] ";
