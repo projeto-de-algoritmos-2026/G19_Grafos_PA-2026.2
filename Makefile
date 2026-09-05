@@ -1,8 +1,8 @@
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra -O2
+CXXFLAGS = -std=c++17 -Wall -Wextra -O2 -Iinclude
 
 TARGET = main.exe
-SRCS = main.cpp prim_variations.cpp structure_scc.cpp structure_topo.cpp
+SRCS = $(wildcard src/*.cpp)
 OBJS = $(SRCS:.cpp=.o)
 
 all: $(TARGET)
@@ -14,7 +14,7 @@ $(TARGET): $(OBJS)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
-	del /f /q $(OBJS) $(TARGET) 2>nul || rm -f $(OBJS) $(TARGET)
+	del /f /q src\*.o $(TARGET) 2>nul || rm -f src/*.o $(TARGET)
 
 run: $(TARGET)
 	./$(TARGET)

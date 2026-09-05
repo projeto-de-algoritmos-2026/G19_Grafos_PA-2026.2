@@ -12,13 +12,10 @@ struct SectionGraph {
     std::vector<std::vector<int>> adj;
 };
 
-// Constructs the directed graph of song sections from transitions map
 SectionGraph buildStructureGraph(const std::unordered_map<std::string, std::vector<std::string>>& transitions);
 
-// Finds Strongly Connected Components using Kosaraju or Tarjan algorithm
 std::vector<std::vector<int>> findSCCs(const SectionGraph& graph);
 
-// Helper function to print discovered SCCs
 void printSCCs(const SectionGraph& graph, const std::vector<std::vector<int>>& sccs);
 
-#endif // STRUCTURE_SCC_H
+#endif
