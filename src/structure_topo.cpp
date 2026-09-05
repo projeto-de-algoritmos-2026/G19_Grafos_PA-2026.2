@@ -1,5 +1,4 @@
 #include "structure_topo.h"
-#include <queue>
 #include <set>
 #include <algorithm>
 #include <iostream>
@@ -40,38 +39,29 @@ CondensedGraph condenseSCCs(const SectionGraph& originalGraph, const std::vector
     return condensed;
 }
 
+static void dfsTopo(int u, const CondensedGraph& condensedGraph, std::vector<bool>& visited, std::vector<int>& order) {
+    visited[u] = true;
+    for (int v : condensedGraph.adj[u]) {
+        if (!visited[v]) {
+            dfsTopo(v, condensedGraph, visited, order);
+        }
+    }
+    order.push_back(u);
+}
+
 std::vector<int> topologicalSort(const CondensedGraph& condensedGraph) {
     int numSCCs = (int)condensedGraph.sccs.size();
-    std::vector<int> inDegree(numSCCs, 0);
+    std::vector<bool> visited(numSCCs, false);
+    std::vector<int> order;
 
-    for (int u = 0; u < numSCCs; ++u) {
-        for (int v : condensedGraph.adj[u]) {
-            inDegree[v]++;
-        }
-    }
-
-    std::queue<int> q;
     for (int i = 0; i < numSCCs; ++i) {
-        if (inDegree[i] == 0) {
-            q.push(i);
+        if (!visited[i]) {
+            dfsTopo(i, condensedGraph, visited, order);
         }
     }
 
-    std::vector<int> topoOrder;
-    while (!q.empty()) {
-        int u = q.front();
-        q.pop();
-        topoOrder.push_back(u);
-
-        for (int v : condensedGraph.adj[u]) {
-            inDegree[v]--;
-            if (inDegree[v] == 0) {
-                q.push(v);
-            }
-        }
-    }
-
-    return topoOrder;
+    std::reverse(order.begin(), order.end());
+    return order;
 }
 
 std::vector<std::string> expandOrder(const CondensedGraph& condensedGraph, 
@@ -98,8 +88,8 @@ bool verifyTopologicalOrder(const CondensedGraph& condensedGraph, const std::vec
     for (int u = 0; u < numSCCs; ++u) {
         for (int v : condensedGraph.adj[u]) {
             if (pos[u] >= pos[v]) {
-                std::cerr << "ERRO NA ORDENAÇÃO TOPOLÓGICA: Supernó " << u << " (pos " << pos[u] 
-                          << ") aparece após ou junto com seu sucessor " << v << " (pos " << pos[v] << ")" << std::endl;
+                std::cerr << "ERRO NA ORDENACAO TOPOLOGICA: Superno " << u << " (pos " << pos[u] 
+                          << ") aparece apos ou junto com seu sucessor " << v << " (pos " << pos[v] << ")" << std::endl;
                 return false;
             }
         }

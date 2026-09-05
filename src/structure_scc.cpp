@@ -32,23 +32,33 @@ SectionGraph buildStructureGraph(const std::unordered_map<std::string, std::vect
     return graph;
 }
 
-static void dfsKosaraju1(int u, const std::vector<std::vector<int>>& adj, std::vector<bool>& visited, std::vector<int>& order) {
-    visited[u] = true;
+static void tarjanDFS(int u, const std::vector<std::vector<int>>& adj,
+                      int& timer, std::vector<int>& disc, std::vector<int>& low,
+                      std::stack<int>& st, std::vector<bool>& inStack,
+                      std::vector<std::vector<int>>& sccs) {
+    disc[u] = low[u] = ++timer;
+    st.push(u);
+    inStack[u] = true;
+
     for (int v : adj[u]) {
-        if (!visited[v]) {
-            dfsKosaraju1(v, adj, visited, order);
+        if (disc[v] == -1) {
+            tarjanDFS(v, adj, timer, disc, low, st, inStack, sccs);
+            low[u] = std::min(low[u], low[v]);
+        } else if (inStack[v]) {
+            low[u] = std::min(low[u], disc[v]);
         }
     }
-    order.push_back(u);
-}
 
-static void dfsKosaraju2(int u, const std::vector<std::vector<int>>& adjRev, std::vector<bool>& visited, std::vector<int>& currentSCC) {
-    visited[u] = true;
-    currentSCC.push_back(u);
-    for (int v : adjRev[u]) {
-        if (!visited[v]) {
-            dfsKosaraju2(v, adjRev, visited, currentSCC);
+    if (low[u] == disc[u]) {
+        std::vector<int> component;
+        while (true) {
+            int v = st.top();
+            st.pop();
+            inStack[v] = false;
+            component.push_back(v);
+            if (u == v) break;
         }
+        sccs.push_back(component);
     }
 }
 
@@ -57,29 +67,15 @@ std::vector<std::vector<int>> findSCCs(const SectionGraph& graph) {
     std::vector<std::vector<int>> sccs;
     if (n == 0) return sccs;
 
-    std::vector<bool> visited(n, false);
-    std::vector<int> order;
+    int timer = 0;
+    std::vector<int> disc(n, -1);
+    std::vector<int> low(n, -1);
+    std::vector<bool> inStack(n, false);
+    std::stack<int> st;
+
     for (int i = 0; i < n; ++i) {
-        if (!visited[i]) {
-            dfsKosaraju1(i, graph.adj, visited, order);
-        }
-    }
-
-    std::vector<std::vector<int>> adjRev(n);
-    for (int u = 0; u < n; ++u) {
-        for (int v : graph.adj[u]) {
-            adjRev[v].push_back(u);
-        }
-    }
-
-    std::fill(visited.begin(), visited.end(), false);
-    std::reverse(order.begin(), order.end());
-
-    for (int u : order) {
-        if (!visited[u]) {
-            std::vector<int> currentSCC;
-            dfsKosaraju2(u, adjRev, visited, currentSCC);
-            sccs.push_back(currentSCC);
+        if (disc[i] == -1) {
+            tarjanDFS(i, graph.adj, timer, disc, low, st, inStack, sccs);
         }
     }
 
@@ -87,13 +83,13 @@ std::vector<std::vector<int>> findSCCs(const SectionGraph& graph) {
 }
 
 void printSCCs(const SectionGraph& graph, const std::vector<std::vector<int>>& sccs) {
-    std::cout << "\n=== Componentes Fortemente Conectados (SCCs Encontrados) ===" << std::endl;
+    std::cout << "\n=== Componentes Fortemente Conectados (SCCs) ===" << std::endl;
     for (size_t i = 0; i < sccs.size(); ++i) {
         std::cout << "SCC " << i + 1 << ": [ ";
         for (size_t j = 0; j < sccs[i].size(); ++j) {
             std::cout << graph.sections[sccs[i][j]];
             if (j + 1 < sccs[i].size()) std::cout << ", ";
         }
-        std::cout << " ]" << (sccs[i].size() > 1 ? " (Ciclo Detectado)" : "") << std::endl;
+        std::cout << " ]" << std::endl;
     }
 }
